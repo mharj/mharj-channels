@@ -1,0 +1,24 @@
+{
+	"extends": [
+		"tslint:recommended",
+		"tslint-config-standard",
+		"tslint-config-prettier"
+	],
+	"linterOptions": {
+		"exclude": [
+			"config/**/*.js",
+			"node_modules/**/*.ts",
+			"coverage/lcov-report/*.js"
+		],
+		"include": [
+			"test/*.ts"
+		]
+	},
+	"rules": {
+		"no-console": [true, "log", "warning"],
+		"linebreak-style": [true, "LF"],
+		"deprecation": true,
+		"await-promise": false,
+		"no-require-imports": true
+	}
+}
