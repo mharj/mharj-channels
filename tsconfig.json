@@ -1,7 +1,7 @@
 {
 	"compilerOptions": {
 		"module": "commonjs",
-		"target": "es2017",
+		"target": "es5",
 		"lib": [
 			"es2017",
 			"dom"
@@ -9,13 +9,9 @@
 		"rootDir": "./src",
 		"outDir": "./dist",
 		"moduleResolution": "node",
-		"sourceRoot": "./src",
-		"types": [
-			"node"
-		],
-		// "declaration": true,
 		"removeComments": false,
-		"inlineSources": true,
+		"declaration": true,
+		"inlineSources": false,
 		"inlineSourceMap": true,
 		"forceConsistentCasingInFileNames": true,
 		"noImplicitReturns": true,
