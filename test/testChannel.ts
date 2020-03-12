@@ -1,7 +1,7 @@
 process.env.NODE_ENV = 'test';
 import {expect} from 'chai';
 import 'mocha';
-import {Channel} from '../src/channel';
+import {Channel} from '../src';
 
 interface IPayload {
 	msg: string;
