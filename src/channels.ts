@@ -36,7 +36,7 @@ export class Channels<A extends object, C extends object> {
 			delete this.channels[key];
 		}
 	}
-	public getChannels(): {key: string, channel: Channel<A, C>}[] {
+	public getChannels(): {key: string; channel: Channel<A, C>}[] {
 		return Object.keys(this.channels).map((key) => {
 			return {key, channel: this.channels[key]};
 		});
@@ -57,7 +57,7 @@ export class Channels<A extends object, C extends object> {
 	 * @param removeCallback
 	 */
 	public onUnRegisterAll(removeCallback: (pass: C) => boolean): void {
-		for(const channel of Object.keys(this.channels)) {
+		for (const channel of Object.keys(this.channels)) {
 			this.channels[channel].onUnRegister(removeCallback);
 		}
 	}

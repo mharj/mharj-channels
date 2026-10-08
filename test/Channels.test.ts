@@ -47,7 +47,7 @@ describe('new Channels', () => {
 				channel.onRegister({id: '01'}, (pass, message) => {
 					expect(pass.id).to.be.eq('01');
 					expect(message).to.be.eql({msg: 'test'});
-					channel.onRegister({id: '01'}, (pass, message) => {
+					channel.onRegister({id: '01'}, (_pass, _message) => {
 						resolve();
 					});
 				});

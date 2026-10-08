@@ -1,0 +1,29 @@
+{
+  "compilerOptions": {
+    "module": "preserve",
+    "target": "es6",
+    "lib": ["es2017", "dom"],
+    "rootDir": "./src",
+    "outDir": "./dist",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+    "removeComments": false,
+    "declaration": true,
+    "inlineSources": false,
+    "inlineSourceMap": true,
+    "forceConsistentCasingInFileNames": true,
+    "noImplicitReturns": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "importHelpers": true,
+    "strictNullChecks": true,
+    "noUnusedLocals": true,
+    "strictBindCallApply": true,
+    "strict": true,
+    "noUncheckedSideEffectImports": true,
+    "erasableSyntaxOnly": true,
+    "isolatedDeclarations": true
+  },
+  "include": ["src"],
+  "exclude": ["test", "dist", "node_modules"]
+}
