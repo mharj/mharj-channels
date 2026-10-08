@@ -1,6 +1,4 @@
-process.env.NODE_ENV = 'test';
-import {expect} from 'chai';
-import 'mocha';
+import {describe, expect, it} from 'vitest';
 import {Channels} from '../src';
 
 interface IPayload {
@@ -12,24 +10,24 @@ interface IPassData {
 let channels: Channels<IPayload, IPassData>;
 
 describe('new Channels', () => {
-	before((done) => {
-		done();
-	});
 	describe('test channels', () => {
-		it('should create channel to channels ', (done) => {
+		it('should create channel to channels ', async () => {
 			channels = new Channels<IPayload, IPassData>({replayLast: true});
 			channels.onClear((pass) => pass.id === undefined);
 			const channel = channels.getChannel('01');
-			channel.onRegister({id: '01'}, (pass, message) => {
-				expect(pass.id).to.be.eq('01');
-				expect(message).to.be.eql({msg: 'test'});
-				done();
+			const onRegisterPromise = new Promise<void>((resolve) => {
+				channel.onRegister({id: '01'}, (pass, message) => {
+					expect(pass.id).toBe('01');
+					expect(message).toEqual({msg: 'test'});
+					resolve();
+				});
 			});
 			expect(channel.isRegistered((pass) => pass.id === '01')).to.be.eq(true);
 			expect(channels.count()).to.be.eq(1);
 			channel.send({msg: 'test'});
+			await onRegisterPromise;
 		});
-		it('should remove listener from channel ', (done) => {
+		it('should remove listener from channel ', () => {
 			expect(channels.count()).to.be.eq(1);
 			const channel = channels.getChannel('01');
 			expect(channel.count()).to.be.eq(1);
@@ -37,28 +35,29 @@ describe('new Channels', () => {
 			channel.onUnRegister((pass) => pass.id === '01');
 			expect(channel.count()).to.be.eq(0);
 			expect(channel.isActive()).to.be.eq(false);
-			done();
 		});
-		it('should remove empty channel', (done) => {
+		it('should remove empty channel', () => {
 			expect(channels.count()).to.be.eq(1);
 			channels.clean();
 			expect(channels.count()).to.be.eq(0);
-			done();
 		});
-		it('add two listeners', (done) => {
+		it('add two listeners', async () => {
 			const channel = channels.getChannel('01');
-			channel.onRegister({id: '01'}, (pass, message) => {
-				expect(pass.id).to.be.eq('01');
-				expect(message).to.be.eql({msg: 'test'});
+			const onRegisterPromise = new Promise<void>((resolve) => {
 				channel.onRegister({id: '01'}, (pass, message) => {
-					done();
+					expect(pass.id).to.be.eq('01');
+					expect(message).to.be.eql({msg: 'test'});
+					channel.onRegister({id: '01'}, (pass, message) => {
+						resolve();
+					});
 				});
 			});
 			expect(channel.isRegistered((pass) => pass.id === '01')).to.be.eq(true);
 			expect(channels.count()).to.be.eq(1);
 			channel.send({msg: 'test'});
+			await onRegisterPromise;
 		});
-		it('should remove listener from all channels', (done) => {
+		it('should remove listener from all channels', () => {
 			expect(channels.count()).to.be.eq(1);
 			const channel = channels.getChannel('01');
 			expect(channel.count()).to.be.eq(2);
@@ -66,7 +65,6 @@ describe('new Channels', () => {
 			channels.onUnRegisterAll((pass) => pass.id === '01');
 			expect(channel.count()).to.be.eq(0);
 			expect(channel.isActive()).to.be.eq(false);
-			done();
 		});
 	});
 });

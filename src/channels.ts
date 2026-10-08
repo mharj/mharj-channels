@@ -1,12 +1,14 @@
 import {Channel} from './channel';
+
 interface IOptions {
 	replayLast?: boolean;
 }
+
 export class Channels<A extends object, C extends object> {
 	private options: IOptions;
 	private channels: {[key: string]: Channel<A, C>};
 	private clearCallback: ((pass: C) => boolean) | undefined;
-	constructor(options?: IOptions) {
+	public constructor(options?: IOptions) {
 		this.options = options || {};
 		this.channels = {};
 	}
@@ -29,17 +31,17 @@ export class Channels<A extends object, C extends object> {
 	 * @param {String} key channel key
 	 * @return {undefined}
 	 */
-	public deleteChannel(key: string) {
+	public deleteChannel(key: string): void {
 		if (this.channels[key]) {
 			delete this.channels[key];
 		}
 	}
-	public getChannels() {
+	public getChannels(): {key: string, channel: Channel<A, C>}[] {
 		return Object.keys(this.channels).map((key) => {
 			return {key, channel: this.channels[key]};
 		});
 	}
-	public getOptions() {
+	public getOptions(): IOptions {
 		return this.options;
 	}
 
@@ -47,33 +49,33 @@ export class Channels<A extends object, C extends object> {
 	 * clear filter callback
 	 * @param clearCallback
 	 */
-	public onClear(clearCallback: (pass: C) => boolean) {
+	public onClear(clearCallback: (pass: C) => boolean): void {
 		this.clearCallback = clearCallback;
 	}
 	/**
 	 * unregistering object from all channels
 	 * @param removeCallback
 	 */
-	public onUnRegisterAll(removeCallback: (pass: C) => boolean) {
-		return Object.keys(this.channels).map((key) => {
-			this.channels[key].onUnRegister(removeCallback);
-		});
+	public onUnRegisterAll(removeCallback: (pass: C) => boolean): void {
+		for(const channel of Object.keys(this.channels)) {
+			this.channels[channel].onUnRegister(removeCallback);
+		}
 	}
 	/**
 	 * Get Channel count
 	 * @return {Number}
 	 */
-	public count() {
+	public count(): number {
 		return Object.keys(this.channels).length;
 	}
 	/**
 	 * do clean to all channels which are not active anymore
 	 */
-	public clean() {
-		return Object.keys(this.channels).map((key) => {
-			if (!this.channels[key].isActive()) {
-				this.deleteChannel(key);
+	public clean(): void {
+		for (const channel of Object.keys(this.channels)) {
+			if (!this.channels[channel].isActive()) {
+				this.deleteChannel(channel);
 			}
-		});
+		}
 	}
 }

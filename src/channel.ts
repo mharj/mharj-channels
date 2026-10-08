@@ -7,10 +7,17 @@ const initialOptions: IOptions = {
 	replayLast: false,
 };
 
+export type ChannelEvents = {
+	active: [];
+	register: [];
+	unregister: [];
+	inactive: [];
+};
+
 /**
  * Channel sub/unsub system
  */
-export class Channel<A extends object, C extends object> extends EventEmitter {
+export class Channel<A extends object, C extends object> extends EventEmitter<ChannelEvents> {
 	private callbacks: Array<{
 		pass: C;
 		callback: (pass: C, listener: A) => void;
@@ -18,7 +25,7 @@ export class Channel<A extends object, C extends object> extends EventEmitter {
 	private clearCallback: ((pass: C) => boolean) | undefined;
 	private options: IOptions;
 	private lastMessage: A[] = [];
-	constructor(options?: IOptions) {
+	public constructor(options?: IOptions) {
 		super();
 		this.options = {...initialOptions, ...options};
 	}
@@ -27,21 +34,23 @@ export class Channel<A extends object, C extends object> extends EventEmitter {
 	 * @param pass pass through object
 	 * @param listenerCallback to handle message and pass through data
 	 */
-	public onRegister(pass: C, listenerCallback: (pass: C, message: A) => void) {
+	public onRegister(pass: C, listenerCallback: (pass: C, message: A) => void): void {
 		if (!this.isActive()) {
 			this.emit('active');
 		}
 		this.callbacks.push({pass, callback: listenerCallback});
 		this.emit('register');
 		if (this.options.replayLast && this.lastMessage) {
-			this.lastMessage.forEach((data) => listenerCallback(pass, data));
+			for (const data of this.lastMessage) {
+				listenerCallback(pass, data);
+			}
 		}
 	}
 	/**
 	 * onUnRegister removes object and callback based on callback array filter
 	 * @param removeCallback
 	 */
-	public onUnRegister(removeCallback: (pass: C) => boolean) {
+	public onUnRegister(removeCallback: (pass: C) => boolean): void {
 		const was = this.isActive();
 		this.callbacks = this.callbacks.filter((d) => !removeCallback(d.pass));
 		this.emit('unregister');
@@ -54,10 +63,10 @@ export class Channel<A extends object, C extends object> extends EventEmitter {
 	 * clear filter callback
 	 * @param clearCallback
 	 */
-	public onClear(clearCallback: (pass: C) => boolean) {
+	public onClear(clearCallback: (pass: C) => boolean): void {
 		this.clearCallback = clearCallback;
 	}
-	public isRegistered(regCb: (pass: C) => boolean) {
+	public isRegistered(regCb: (pass: C) => boolean): boolean {
 		return this.callbacks.findIndex((d) => regCb(d.pass)) !== -1;
 	}
 
@@ -67,11 +76,13 @@ export class Channel<A extends object, C extends object> extends EventEmitter {
 	 * @param {number} index
 	 * @return {void}
 	 */
-	public send(data: A, index?: number) {
+	public send(data: A, index?: number): void {
 		this.doCleanup();
 		const idx = index || 0;
 		this.lastMessage[idx] = data;
-		this.callbacks.forEach((d) => d.callback(d.pass, data));
+		for (const callback of this.callbacks) {
+			callback.callback(callback.pass, data);
+		}
 	}
 
 	/**
@@ -80,7 +91,7 @@ export class Channel<A extends object, C extends object> extends EventEmitter {
 	 * @param {number} index
 	 * @return {void}
 	 */
-	public sendOnce(data: A, index?: number) {
+	public sendOnce(data: A, index?: number): void {
 		const idx = index || 0;
 		if (JSON.stringify(data) !== JSON.stringify(this.lastMessage[idx])) {
 			this.send(data, idx);
@@ -90,7 +101,7 @@ export class Channel<A extends object, C extends object> extends EventEmitter {
 	/**
 	 * runs cleanup filter
 	 */
-	public doCleanup() {
+	public doCleanup(): void {
 		if (this.clearCallback) {
 			this.callbacks = this.callbacks.filter((d) => this.clearCallback && !this.clearCallback(d.pass));
 		}
@@ -99,14 +110,14 @@ export class Channel<A extends object, C extends object> extends EventEmitter {
 	 * Get listener count
 	 * @return {Number}
 	 */
-	public count() {
+	public count(): number {
 		return this.callbacks.length;
 	}
 	/**
 	 * Do we have listener
 	 * @return {Boolean}
 	 */
-	public isActive() {
-		return this.callbacks.length > 0 ? true : false;
+	public isActive(): boolean {
+		return this.callbacks.length > 0;
 	}
 }

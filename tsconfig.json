@@ -1,14 +1,15 @@
 {
 	"compilerOptions": {
-		"module": "commonjs",
-		"target": "es5",
+		"module": "preserve",
+		"target": "es6",
 		"lib": [
 			"es2017",
 			"dom"
 		],
 		"rootDir": "./src",
 		"outDir": "./dist",
-		"moduleResolution": "node",
+		"moduleResolution": "bundler",
+		"types": ["node"],
 		"removeComments": false,
 		"declaration": true,
 		"inlineSources": false,
@@ -19,10 +20,12 @@
 		"noImplicitAny": true,
 		"importHelpers": true,
 		"strictNullChecks": true,
-		"suppressImplicitAnyIndexErrors": true,
 		"noUnusedLocals": true,
 		"strictBindCallApply": true,
-		"allowJs": true
+		"strict": true,
+		"noUncheckedSideEffectImports": true,
+		"erasableSyntaxOnly": true,
+		"isolatedDeclarations": true
 	},
 	"include": [
 		"./src/**/*"
