@@ -1,6 +1,6 @@
 {
     "name": "mharj-channels",
-    "version": "0.0.3",
+    "version": "0.0.4",
     "description": "channels",
     "main": "./dist/index.cjs",
     "module": "./dist/index.mjs",
